@@ -38,6 +38,24 @@ public class ProdutosDAO {
             javax.swing.JOptionPane.showMessageDialog(null, "Erro ao cadastrar produto DAO: " + e.getMessage());
         }
     }
+    
+    public void venderProduto(int id) {
+    String sql = "UPDATE produtos SET status = ? WHERE id = ?";
+
+    conn = new conectaDAO().connectDB();
+
+    try {
+        pstm = conn.prepareStatement(sql);
+        pstm.setString(1, "Vendido");
+        pstm.setInt(2, id);
+
+        pstm.executeUpdate();
+        pstm.close();
+
+    } catch (Exception e) {
+        javax.swing.JOptionPane.showMessageDialog(null, "Erro ao vender produto DAO: " + e.getMessage());
+    }
+}
 
     public ArrayList<ProdutosDTO> listarProdutos() {
         String sql = "SELECT * FROM produtos";
@@ -62,8 +80,35 @@ public class ProdutosDAO {
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(null, "Erro ao listar produtos DAO: " + e.getMessage());
         }
+    return lista;
+}
+        
+public ArrayList<ProdutosDTO> listarProdutosVendidos() {
+    String sql = "SELECT * FROM produtos WHERE status = 'Vendido'";
 
-        return lista;
+    conn = new conectaDAO().connectDB();
+    ArrayList<ProdutosDTO> lista = new ArrayList<>();
+
+    try {
+        pstm = conn.prepareStatement(sql);
+        rs = pstm.executeQuery();
+
+        while (rs.next()) {
+            ProdutosDTO produto = new ProdutosDTO();
+
+            produto.setId(rs.getInt("id"));
+            produto.setNome(rs.getString("nome"));
+            produto.setValor(rs.getInt("valor"));
+            produto.setStatus(rs.getString("status"));
+
+            lista.add(produto);
+        }
+
+    } catch (Exception e) {
+        javax.swing.JOptionPane.showMessageDialog(null, "Erro ao listar produtos vendidos: " + e.getMessage());
     }
+
+    return lista;
+}
 }
 
